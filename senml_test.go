@@ -21,36 +21,38 @@ var (
 	boolV = true
 )
 
-var p = senml.Pack{
-	Records: []senml.Record{
-		senml.Record{
-			BaseName:    "base-name",
-			BaseTime:    100,
-			BaseUnit:    "base-unit",
-			BaseVersion: 11,
-			BaseSum:     100,
-			BaseValue:   34,
-			Name:        "name",
-			Unit:        "unit",
-			Time:        150,
-			UpdateTime:  300,
-			Value:       &value,
-			Sum:         &sum,
+func pack() senml.Pack {
+	return senml.Pack{
+		Records: []senml.Record{
+			senml.Record{
+				BaseName:    "base-name",
+				BaseTime:    100,
+				BaseUnit:    "base-unit",
+				BaseVersion: 11,
+				BaseSum:     100,
+				BaseValue:   34,
+				Name:        "name",
+				Unit:        "unit",
+				Time:        150,
+				UpdateTime:  300,
+				Value:       &value,
+				Sum:         &sum,
+			},
+			senml.Record{
+				BaseName:    "base-name",
+				BaseTime:    100,
+				BaseUnit:    "base-unit",
+				BaseVersion: 11,
+				BaseSum:     100,
+				Name:        "name-1",
+				Unit:        "unit",
+				Time:        150,
+				UpdateTime:  300,
+				BoolValue:   &boolV,
+				Sum:         &sum,
+			},
 		},
-		senml.Record{
-			BaseName:    "base-name",
-			BaseTime:    100,
-			BaseUnit:    "base-unit",
-			BaseVersion: 11,
-			BaseSum:     100,
-			Name:        "name-1",
-			Unit:        "unit",
-			Time:        150,
-			UpdateTime:  300,
-			BoolValue:   &boolV,
-			Sum:         &sum,
-		},
-	},
+	}
 }
 
 func TestEncode(t *testing.T) {
@@ -60,6 +62,7 @@ func TestEncode(t *testing.T) {
 	assert.Nil(t, err, "Decoding XML expected to succeed")
 	cborVal, err := hex.DecodeString(cborEncoded)
 	assert.Nil(t, err, "Decoding CBOR expected to succeed")
+	p := pack()
 	cases := []struct {
 		desc string
 		enc  []byte
@@ -110,6 +113,7 @@ func TestDecode(t *testing.T) {
 	assert.Nil(t, err, "Decoding XML expected to succeed")
 	cborVal, err := hex.DecodeString(cborEncoded)
 	assert.Nil(t, err, "Decoding CBOR expected to succeed")
+	p := pack()
 	xmlPack := p
 	xmlPack.Xmlns = "urn:ietf:params:xml:ns:senml"
 	cases := []struct {
@@ -155,10 +159,132 @@ func TestDecode(t *testing.T) {
 	}
 }
 
-func testValidate(t *testing.T) {
+func TestValidate(t *testing.T) {
+	emptyName := pack()
 
+	emptyName.Records[0].BaseName = ""
+	emptyName.Records[0].Name = ""
+
+	invalidName := pack()
+	invalidName.Records[0].BaseName = `\o/`
+
+	invalidNameStart := pack()
+	invalidNameStart.Records[0].BaseName = `/`
+
+	multiValue := pack()
+	multiValue.Records[0].BoolValue = &boolV
+
+	noValue := pack()
+	noValue.Records[0].Value = nil
+	noValue.Records[0].BaseSum = 0
+	noValue.Records[0].Sum = nil
+
+	multiVersion := pack()
+	multiVersion.Records[1].BaseVersion = 3
+
+	cases := []struct {
+		desc string
+		p    senml.Pack
+		err  error
+	}{
+		{
+			desc: "validate successfully",
+			p:    pack(),
+			err:  nil,
+		},
+		{
+			desc: "validate empty name",
+			p:    emptyName,
+			err:  senml.ErrEmptyName,
+		},
+		{
+			desc: "validate invalid name",
+			p:    invalidName,
+			err:  senml.ErrBadChar,
+		},
+		{
+			desc: "validate invalid first char in name",
+			p:    invalidNameStart,
+			err:  senml.ErrBadChar,
+		},
+		{
+			desc: "validate multiple value fields",
+			p:    multiValue,
+			err:  senml.ErrTooManyValues,
+		},
+		{
+			desc: "validate no values",
+			p:    noValue,
+			err:  senml.ErrNoValues,
+		},
+		{
+			desc: "validate multiple versions",
+			p:    multiVersion,
+			err:  senml.ErrVersionChange,
+		},
+	}
+	for _, tc := range cases {
+		err := senml.Validate(tc.p)
+		assert.Equal(t, tc.err, err, fmt.Sprintf("%s expected %s, got %s", tc.desc, tc.err, err))
+	}
 }
 
-func testNormalize(t *testing.T) {
+func TestNormalize(t *testing.T) {
+	p := pack()
+	p.Records[0].Unit = ""
+	norm := pack()
 
+	r0 := norm.Records[0]
+	r1 := norm.Records[1]
+
+	// Use BaseUnit.
+	r0.Name = r0.BaseName + r0.Name
+	r0.BaseName = ""
+	r0.Time = r0.BaseTime + r0.Time
+	r0.BaseTime = 0
+	*r0.Value = *r0.Value + r0.BaseValue
+	r0.BaseValue = 0
+	r0.Unit = r0.BaseUnit
+	r0.BaseUnit = ""
+	*r0.Sum = r0.BaseSum + *r0.Sum
+	r0.BaseSum = 0
+
+	r1.Name = r1.BaseName + r1.Name
+	r1.BaseName = ""
+	r1.Time = r1.BaseTime + r1.Time
+	r1.BaseTime = 0
+	r1.BaseValue = 0
+	r1.BaseUnit = ""
+	*r1.Sum = r1.BaseSum + *r1.Sum
+	r1.BaseSum = 0
+	norm.Records = []senml.Record{r0, r1}
+
+	emptyName := pack()
+	emptyName.Records[0].BaseName = ""
+	emptyName.Records[0].Name = ""
+
+	cases := []struct {
+		desc string
+		p    senml.Pack
+		norm senml.Pack
+		err  error
+	}{
+		{
+			desc: "normalize successfully",
+			p:    p,
+			norm: norm,
+			err:  nil,
+		},
+		{
+			desc: "normalize with error",
+			p:    emptyName,
+			norm: senml.Pack{},
+			err:  senml.ErrEmptyName,
+		},
+	}
+	for _, tc := range cases {
+		n, err := senml.Normalize(tc.p)
+		assert.Equal(t, tc.err, err, fmt.Sprintf("%s expected %s, got %s", tc.desc, tc.err, err))
+		assert.Equal(t, tc.norm, n, fmt.Sprintf("%s expected %v, got %v", tc.desc, tc.norm, n))
+	}
 }

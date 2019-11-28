@@ -37,8 +37,8 @@ var (
 	ErrBadChar = errors.New("invalid char")
 	// ErrTooManyValues indicates that there is more than one value field.
 	ErrTooManyValues = errors.New("more than one value in the record")
-	// ErrNotEnoughValues indicates that there is no value nor sum field present.
-	ErrNotEnoughValues = errors.New("no value or sum field found")
+	// ErrNoValues indicates that there is no value nor sum field present.
+	ErrNoValues = errors.New("no value or sum field found")
 )
 
 // Record represents one senML record.
@@ -142,7 +142,7 @@ func Normalize(p Pack) (Pack, error) {
 		if r.BaseSum != 0 {
 			bsum = r.BaseSum
 		}
-		if len(r.BaseUnit) > 0 {
+		if r.BaseUnit != "" {
 			bunit = r.BaseUnit
 		}
 		if len(r.BaseName) > 0 {
@@ -153,7 +153,7 @@ func Normalize(p Pack) (Pack, error) {
 		if r.Sum != nil {
 			*r.Sum = bsum + *r.Sum
 		}
-		if len(r.Unit) == 0 {
+		if r.Unit == "" {
 			r.Unit = bunit
 		}
 		if r.Value != nil && r.BaseValue != 0 {
@@ -181,24 +181,32 @@ func Normalize(p Pack) (Pack, error) {
 // Validate validates SenML records.
 func Validate(p Pack) error {
 	var bver uint
+	var bname string
+	var bsum float64
 	for _, r := range p.Records {
-		// Check if version is the same for all records.
+		// Check if version is the same for all the records.
 		if bver == 0 && r.BaseVersion != 0 {
 			bver = r.BaseVersion
 		}
 		if r.BaseVersion != bver {
 			return ErrVersionChange
 		}
-		name := r.BaseName + r.Name
+		if r.BaseName != "" {
+			bname = r.BaseName
+		}
+		if r.BaseSum != 0 {
+			bsum = r.BaseSum
+		}
+		name := bname + r.Name
 		if len(name) == 0 {
 			return ErrEmptyName
 		}
 		l := name[0]
-		if l == '-' || l == ':' || l == '.' || l == '/' || l == '_' {
+		if (l == '-') || (l == ':') || (l == '.') || (l == '/') || (l == '_') {
 			return ErrBadChar
 		}
 		for _, l := range name {
-			if (l < 'a' || l > 'z') && (l < 'A' || l > 'Z') && (l < '0' || l > '9') && l != '-' && l != ':' && l != '.' && l != '/' && l != '_' {
+			if (l < 'a' || l > 'z') && (l < 'A' || l > 'Z') && (l < '0' || l > '9') && (l != '-') && (l != ':') && (l != '.') && (l != '/') && (l != '_') {
 				return ErrBadChar
 			}
 		}
@@ -218,11 +226,11 @@ func Validate(p Pack) error {
 		if valCnt > 1 {
 			return ErrTooManyValues
 		}
-		if r.Sum != nil {
+		if r.Sum != nil || bsum != 0 {
 			valCnt++
 		}
 		if valCnt < 1 {
-			return ErrNotEnoughValues
+			return ErrNoValues
 		}
 	}
 
