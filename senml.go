@@ -85,7 +85,6 @@ func (p *Pack) Swap(i, j int) {
 // into the returned SenML record.
 func Decode(msg []byte, format Format) (Pack, error) {
 	var p Pack
-	p.Xmlns = xmlns
 	switch format {
 	case JSON:
 		if err := json.Unmarshal(msg, &p.Records); err != nil {
@@ -95,10 +94,13 @@ func Decode(msg []byte, format Format) (Pack, error) {
 		if err := xml.Unmarshal(msg, &p); err != nil {
 			return Pack{}, err
 		}
+		p.Xmlns = xmlns
 	case CBOR:
 		if err := cbor.Unmarshal(msg, &p.Records); err != nil {
 			return Pack{}, err
 		}
+	default:
+		return Pack{}, ErrUnsupportedFormat
 	}
 
 	return p, Validate(p)
@@ -106,11 +108,11 @@ func Decode(msg []byte, format Format) (Pack, error) {
 
 // Encode takes a SenML Pack and encodes it using the given format.
 func Encode(p Pack, format Format) ([]byte, error) {
-	p.Xmlns = xmlns
 	switch format {
 	case JSON:
 		return json.Marshal(p.Records)
 	case XML:
+		p.Xmlns = xmlns
 		return xml.Marshal(p)
 	case CBOR:
 		return cbor.Marshal(p.Records, cbor.EncOptions{})

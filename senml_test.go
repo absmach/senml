@@ -63,30 +63,37 @@ func TestEncode(t *testing.T) {
 	cases := []struct {
 		desc string
 		enc  []byte
-		kind senml.Format
 		p    senml.Pack
+		kind senml.Format
 		err  error
 	}{
 		{
 			desc: "encode JSON successfully",
 			enc:  jsnVal,
-			kind: senml.JSON,
 			p:    p,
+			kind: senml.JSON,
 			err:  nil,
 		},
 		{
 			desc: "encode XML successfully",
 			enc:  xmlVal,
-			kind: senml.XML,
 			p:    p,
+			kind: senml.XML,
 			err:  nil,
 		},
 		{
 			desc: "encode CBOR successfully",
 			enc:  cborVal,
-			kind: senml.CBOR,
 			p:    p,
+			kind: senml.CBOR,
 			err:  nil,
+		},
+		{
+			desc: "encode unsupported format",
+			enc:  nil,
+			p:    p,
+			kind: 44,
+			err:  senml.ErrUnsupportedFormat,
 		},
 	}
 	for _, tc := range cases {
@@ -94,4 +101,64 @@ func TestEncode(t *testing.T) {
 		assert.Equal(t, tc.err, err, fmt.Sprintf("%s expected %s, got %s", tc.desc, tc.err, err))
 		assert.Equal(t, tc.enc, enc, fmt.Sprintf("%s expected %s, got %s", tc.desc, tc.enc, enc))
 	}
+}
+
+func TestDecode(t *testing.T) {
+	jsnVal, err := hex.DecodeString(jsonEncoded)
+	assert.Nil(t, err, "Decoding JSON expected to succeed")
+	xmlVal, err := hex.DecodeString(xmlEncoded)
+	assert.Nil(t, err, "Decoding XML expected to succeed")
+	cborVal, err := hex.DecodeString(cborEncoded)
+	assert.Nil(t, err, "Decoding CBOR expected to succeed")
+	xmlPack := p
+	xmlPack.Xmlns = "urn:ietf:params:xml:ns:senml"
+	cases := []struct {
+		desc string
+		enc  []byte
+		p    senml.Pack
+		kind senml.Format
+		err  error
+	}{
+		{
+			desc: "encode JSON successfully",
+			enc:  jsnVal,
+			p:    p,
+			kind: senml.JSON,
+			err:  nil,
+		},
+		{
+			desc: "encode XML successfully",
+			enc:  xmlVal,
+			p:    xmlPack,
+			kind: senml.XML,
+			err:  nil,
+		},
+		{
+			desc: "encode CBOR successfully",
+			enc:  cborVal,
+			p:    p,
+			kind: senml.CBOR,
+			err:  nil,
+		},
+		{
+			desc: "encode unsupported format",
+			enc:  nil,
+			p:    senml.Pack{},
+			kind: 44,
+			err:  senml.ErrUnsupportedFormat,
+		},
+	}
+	for _, tc := range cases {
+		d, err := senml.Decode(tc.enc, tc.kind)
+		assert.Equal(t, tc.err, err, fmt.Sprintf("%s expected %s, got %s", tc.desc, tc.err, err))
+		assert.Equal(t, tc.p, d, fmt.Sprintf("%s expected %v, got %v", tc.desc, tc.p, d))
+	}
+}
+
+func testValidate(t *testing.T) {
+
+}
+
+func testNormalize(t *testing.T) {
+
 }
