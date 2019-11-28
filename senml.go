@@ -26,6 +26,21 @@ const (
 	CBOR
 )
 
+var (
+	// ErrVersionChange indicates that records with different BaseVersion are present in Pack.
+	ErrVersionChange = errors.New("version change")
+	// ErrUnsupportedFormat indicates the wrong message format (format other than JSON, XML or CBOR).
+	ErrUnsupportedFormat = errors.New("unsupported format")
+	// ErrEmptyName indicates empty record name.
+	ErrEmptyName = errors.New("empty name")
+	// ErrBadChar indicates invalid char or that char is not allowed at the given position.
+	ErrBadChar = errors.New("invalid char")
+	// ErrTooManyValues indicates that there is more than one value field.
+	ErrTooManyValues = errors.New("more than one value in the record")
+	// ErrNotEnoughValues indicates that there is no value nor sum field present.
+	ErrNotEnoughValues = errors.New("no value or sum field found")
+)
+
 // Record represents one senML record.
 type Record struct {
 	XMLName     *bool    `json:"_,omitempty" xml:"senml"`
@@ -100,7 +115,7 @@ func Encode(p Pack, format Format) ([]byte, error) {
 	case CBOR:
 		return cbor.Marshal(p.Records, cbor.EncOptions{})
 	default:
-		return nil, errors.New("unsupported format")
+		return nil, ErrUnsupportedFormat
 	}
 }
 
@@ -148,7 +163,7 @@ func Normalize(p Pack) (Pack, error) {
 			r.BaseVersion = 0
 		}
 
-		// Remove Base Values to
+		// Remove Base Values from the Record.
 		r.BaseTime = 0
 		r.BaseValue = 0
 		r.BaseUnit = ""
@@ -170,42 +185,42 @@ func Validate(p Pack) error {
 			bver = r.BaseVersion
 		}
 		if r.BaseVersion != bver {
-			return errors.New("unalowed version change")
+			return ErrVersionChange
 		}
 		name := r.BaseName + r.Name
 		if len(name) == 0 {
-			return errors.New("empty name")
+			return ErrEmptyName
 		}
 		l := name[0]
 		if l == '-' || l == ':' || l == '.' || l == '/' || l == '_' {
-			return errors.New("bad name start")
+			return ErrBadChar
 		}
 		for _, l := range name {
 			if (l < 'a' || l > 'z') && (l < 'A' || l > 'Z') && (l < '0' || l > '9') && l != '-' && l != ':' && l != '.' && l != '/' && l != '_' {
-				return errors.New("bad char in name")
+				return ErrBadChar
 			}
 		}
-		valueCount := 0
+		var valCnt int
 		if r.Value != nil {
-			valueCount++
+			valCnt++
 		}
 		if r.BoolValue != nil {
-			valueCount++
+			valCnt++
 		}
 		if r.DataValue != nil {
-			valueCount++
+			valCnt++
 		}
 		if r.StringValue != nil {
-			valueCount++
+			valCnt++
 		}
-		if valueCount > 1 {
-			return errors.New("too many values")
+		if valCnt > 1 {
+			return ErrTooManyValues
 		}
 		if r.Sum != nil {
-			valueCount++
+			valCnt++
 		}
-		if valueCount < 1 {
-			return errors.New("No value or sum")
+		if valCnt < 1 {
+			return ErrNotEnoughValues
 		}
 	}
 
