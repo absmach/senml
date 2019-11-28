@@ -43,7 +43,7 @@ var (
 
 // Record represents one senML record.
 type Record struct {
-	XMLName     *bool    `json:"_,omitempty" xml:"senml"`
+	XMLName     *bool    `json:"-" xml:"senml" cbor:"-"`
 	BaseName    string   `json:"bn,omitempty" xml:"bn,attr,omitempty" cbor:"-2,keyasint,omitempty"`
 	BaseTime    float64  `json:"bt,omitempty" xml:"bt,attr,omitempty" cbor:"-3,keyasint,omitempty"`
 	BaseUnit    string   `json:"bu,omitempty" xml:"bu,attr,omitempty" cbor:"-4,keyasint,omitempty"`

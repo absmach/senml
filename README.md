@@ -5,7 +5,7 @@ This repository contains a lightweight implementation of [RFC 8428 Sensor Measur
 ## Codec
 
 The following formats are supported:
-  
+
 - JSON
 - XML
 - CBOR
