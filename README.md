@@ -12,7 +12,7 @@ The following formats are supported:
 
 ## Normalization
 
-Normalized (resolved) SenML Pack consists of resolved SenML Records. A SenML Record is referred to as "resolved" if it does not contain any base values, i.e., labels starting with the character "b", except for Base Version fields, and has no relative times.[*](https://tools.ietf.org/html/rfc8428#section-4.6).
+Normalized (resolved) SenML Pack consists of resolved SenML Records. A SenML Record is referred to as "resolved" if it does not contain any base values, i.e., labels starting with the character "b", except for Base Version fields, and has no relative times.[*](https://tools.ietf.org/html/rfc8428#section-4.6)
 
 ## Validation
 
