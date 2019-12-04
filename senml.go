@@ -27,14 +27,19 @@ const (
 var (
 	// ErrVersionChange indicates that records with different BaseVersion are present in Pack.
 	ErrVersionChange = errors.New("version change")
+
 	// ErrUnsupportedFormat indicates the wrong message format (format other than JSON, XML or CBOR).
 	ErrUnsupportedFormat = errors.New("unsupported format")
+
 	// ErrEmptyName indicates empty record name.
 	ErrEmptyName = errors.New("empty name")
+
 	// ErrBadChar indicates invalid char or that char is not allowed at the given position.
 	ErrBadChar = errors.New("invalid char")
+
 	// ErrTooManyValues indicates that there is more than one value field.
 	ErrTooManyValues = errors.New("more than one value in the record")
+
 	// ErrNoValues indicates that there is no value nor sum field present.
 	ErrNoValues = errors.New("no value or sum field found")
 )
@@ -120,7 +125,7 @@ func Encode(p Pack, format Format) ([]byte, error) {
 	}
 }
 
-// Normalize removes all the base values and expands records values  base items.
+// Normalize removes all the base values and expands records values with the base items.
 // The base fields apply to the entries in the Record and also to all Records after
 // it up to, but not including, the next Record that has that same base field.
 func Normalize(p Pack) (Pack, error) {
@@ -232,6 +237,5 @@ func Validate(p Pack) error {
 			return ErrNoValues
 		}
 	}
-
 	return nil
 }
