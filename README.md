@@ -1,5 +1,7 @@
 # SenML
 
+[![coverage][cov-badge]][cov-url]
+
 This repository contains a lightweight implementation of [RFC 8428 Sensor Measurement Lists (SenML)](https://tools.ietf.org/html/rfc8428)
 
 ## Codec
@@ -18,3 +20,6 @@ Normalized (resolved) SenML Pack consists of resolved SenML Records. A SenML Rec
 
 Valid SenML Record is the record with valid all the required fields and `exactly one` value field. Base values, if present, must be valid, as well. The Pack is valid if all the Records are valid and have the same Base Version.
 All SenML Records in a Pack must have the same version number. This is typically done by adding a Base Version field to only the first Record in the Pack or by using the default value.[*](https://tools.ietf.org/html/rfc8428#section-4.4)
+
+[cov-badge]: https://codecov.io/gh/mainflux/senml/branch/master/graph/badge.svg
+[cov-url]: https://codecov.io/gh/mainflux/senml
