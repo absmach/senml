@@ -17,7 +17,6 @@ jobs:
 
     - name: test
       run: |
-        ls
         go test -v -race -tags test -coverprofile=profile.out -covermode=atomic ./...
     
     - name: Upload coverage to Codecov  
