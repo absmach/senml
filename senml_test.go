@@ -231,6 +231,7 @@ func TestValidate(t *testing.T) {
 
 func TestNormalize(t *testing.T) {
 	p := pack()
+	p.Records[1].Time -= 10
 	p.Records[0].Unit = ""
 	norm := pack()
 
@@ -251,13 +252,13 @@ func TestNormalize(t *testing.T) {
 
 	r1.Name = r1.BaseName + r1.Name
 	r1.BaseName = ""
-	r1.Time = r1.BaseTime + r1.Time
+	r1.Time = r1.BaseTime + r1.Time - 10
 	r1.BaseTime = 0
 	r1.BaseValue = 0
 	r1.BaseUnit = ""
 	*r1.Sum = r1.BaseSum + *r1.Sum
 	r1.BaseSum = 0
-	norm.Records = []senml.Record{r0, r1}
+	norm.Records = []senml.Record{r1, r0}
 
 	emptyName := pack()
 	emptyName.Records[0].BaseName = ""
