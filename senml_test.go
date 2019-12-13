@@ -2,7 +2,11 @@ package senml_test
 
 import (
 	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/mainflux/senml"
@@ -150,6 +154,20 @@ func TestDecode(t *testing.T) {
 			p:    senml.Pack{},
 			kind: 44,
 			err:  senml.ErrUnsupportedFormat,
+		},
+		{
+			desc: "encode invalid JSON",
+			enc:  []byte(`{"time":"test"}`),
+			p:    senml.Pack{},
+			kind: senml.JSON,
+			err:  &json.UnmarshalTypeError{Value: "object", Type: reflect.TypeOf([]senml.Record{}), Offset: 1},
+		},
+		{
+			desc: "encode invalid XML",
+			enc:  []byte(`<sensml xmlns="urn:ietf:params:xml:ns:senml"><senml bt="invalid"></senml></sensml>`),
+			p:    senml.Pack{},
+			kind: senml.XML,
+			err:  &strconv.NumError{Func: "ParseFloat", Num: "invalid", Err: errors.New("invalid syntax")},
 		},
 	}
 	for _, tc := range cases {
