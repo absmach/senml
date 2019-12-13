@@ -28,7 +28,7 @@ var (
 func pack() senml.Pack {
 	return senml.Pack{
 		Records: []senml.Record{
-			senml.Record{
+			{
 				BaseName:    "base-name",
 				BaseTime:    100,
 				BaseUnit:    "base-unit",
@@ -42,7 +42,7 @@ func pack() senml.Pack {
 				Value:       &value,
 				Sum:         &sum,
 			},
-			senml.Record{
+			{
 				BaseName:    "base-name",
 				BaseTime:    100,
 				BaseUnit:    "base-unit",

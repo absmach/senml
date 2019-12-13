@@ -227,14 +227,21 @@ func Validate(p Pack) error {
 		if valCnt < 1 {
 			return ErrNoValues
 		}
-		l := name[0]
-		if (l == '-') || (l == ':') || (l == '.') || (l == '/') || (l == '_') {
-			return ErrBadChar
+		if err := validateName(name); err != nil {
+			return err
 		}
-		for _, l := range name {
-			if (l < 'a' || l > 'z') && (l < 'A' || l > 'Z') && (l < '0' || l > '9') && (l != '-') && (l != ':') && (l != '.') && (l != '/') && (l != '_') {
-				return ErrBadChar
-			}
+	}
+	return nil
+}
+
+func validateName(name string) error {
+	l := name[0]
+	if (l == '-') || (l == ':') || (l == '.') || (l == '/') || (l == '_') {
+		return ErrBadChar
+	}
+	for _, l := range name {
+		if (l < 'a' || l > 'z') && (l < 'A' || l > 'Z') && (l < '0' || l > '9') && (l != '-') && (l != ':') && (l != '.') && (l != '/') && (l != '_') {
+			return ErrBadChar
 		}
 	}
 	return nil

@@ -1,6 +1,8 @@
 # SenML
 
 [![coverage][cov-badge]][cov-url]
+[![go report card][grc-badge]][grc-url]
+[![license][license]](LICENSE)
 
 This repository contains a lightweight implementation of [RFC 8428 Sensor Measurement Lists (SenML)](https://tools.ietf.org/html/rfc8428)
 
@@ -23,3 +25,6 @@ All SenML Records in a Pack must have the same version number. This is typically
 
 [cov-badge]: https://codecov.io/gh/mainflux/senml/branch/master/graph/badge.svg
 [cov-url]: https://codecov.io/gh/mainflux/senml
+[grc-badge]: https://goreportcard.com/badge/github.com/mainflux/senml
+[grc-url]: https://goreportcard.com/report/github.com/mainflux/senml
+[license]: https://img.shields.io/badge/license-Apache%20v2.0-blue.svg
