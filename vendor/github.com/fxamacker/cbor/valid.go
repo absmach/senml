@@ -81,7 +81,9 @@ func checkValid(data []byte, off int) (_ int, t cborType, indefinite bool, err e
 			}
 		}
 	case cborTypeTag: // Check tagged item following tag.
-		return checkValid(data, off)
+		if off, _, _, err = checkValid(data, off); err != nil {
+			return 0, 0, false, err
+		}
 	}
 	return off, t, indefinite, nil
 }
@@ -104,10 +106,10 @@ func checkValidIndefinite(data []byte, off int, t cborType) (_ int, err error) {
 		}
 		if isByteOrTextString {
 			if t != nextType {
-				return 0, &SemanticError{"cbor: wrong element type " + nextType.String() + " for indefinite-length " + t.String()}
+				return 0, &SyntaxError{"cbor: wrong element type " + nextType.String() + " for indefinite-length " + t.String()}
 			}
 			if indefinite {
-				return 0, &SemanticError{"cbor: indefinite-length " + t.String() + " chunk is not definite-length"}
+				return 0, &SyntaxError{"cbor: indefinite-length " + t.String() + " chunk is not definite-length"}
 			}
 		}
 	}

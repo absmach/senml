@@ -1,6 +1,6 @@
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
-# github.com/fxamacker/cbor v1.3.2
+# github.com/fxamacker/cbor v1.3.3
 github.com/fxamacker/cbor
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
