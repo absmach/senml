@@ -192,6 +192,9 @@ func Validate(p Pack) error {
 		if bver == 0 && r.BaseVersion != 0 {
 			bver = r.BaseVersion
 		}
+		if bver != 0 && r.BaseVersion == 0 {
+			r.BaseVersion = bver
+		}
 		if r.BaseVersion != bver {
 			return ErrVersionChange
 		}

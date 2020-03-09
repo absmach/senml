@@ -197,6 +197,9 @@ func TestValidate(t *testing.T) {
 	noValue.Records[0].BaseSum = 0
 	noValue.Records[0].Sum = nil
 
+	validVersion := pack()
+	validVersion.Records[1].BaseVersion = 0
+
 	multiVersion := pack()
 	multiVersion.Records[1].BaseVersion = 3
 
@@ -234,6 +237,11 @@ func TestValidate(t *testing.T) {
 			desc: "validate no values",
 			p:    noValue,
 			err:  senml.ErrNoValues,
+		},
+		{
+			desc: "validate version",
+			p:    validVersion,
+			err:  nil,
 		},
 		{
 			desc: "validate multiple versions",
