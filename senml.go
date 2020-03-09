@@ -6,7 +6,7 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/fxamacker/cbor"
+	"github.com/fxamacker/cbor/v2"
 )
 
 const (
@@ -119,7 +119,7 @@ func Encode(p Pack, format Format) ([]byte, error) {
 		p.Xmlns = xmlns
 		return xml.Marshal(p)
 	case CBOR:
-		return cbor.Marshal(p.Records, cbor.EncOptions{})
+		return cbor.Marshal(p.Records)
 	default:
 		return nil, ErrUnsupportedFormat
 	}
