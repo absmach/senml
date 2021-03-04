@@ -1,12 +1,18 @@
 # github.com/davecgh/go-spew v1.1.0
+## explicit
 github.com/davecgh/go-spew/spew
-# github.com/fxamacker/cbor/v2 v2.2.0
+# github.com/fxamacker/cbor/v2 v2.3.0
+## explicit; go 1.12
 github.com/fxamacker/cbor/v2
 # github.com/pmezard/go-difflib v1.0.0
+## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/stretchr/testify v1.6.1
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
 github.com/stretchr/testify/assert
 # github.com/x448/float16 v0.8.4
+## explicit; go 1.11
 github.com/x448/float16
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+## explicit
 gopkg.in/yaml.v3
