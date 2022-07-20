@@ -6,20 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Set up Go 1.13
+    - name: Set up Go 1.18
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.18
       id: go
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
-
-    - name: test
+    - name: Lint
+      run:  |
+        export GOBIN=$HOME/go/bin
+        export PATH=$PATH:$(go env GOBIN)
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOBIN) v1.46.2
+        golangci-lint run --no-config --disable-all --enable gosimple --enable govet --enable unused --enable deadcode --timeout 3m
+    - name: Test
       run: |
         go test -v -race -tags test -coverprofile=profile.out -covermode=atomic ./...
-
-    - name: Upload coverage to Codecov
+    - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
