@@ -67,8 +67,8 @@ type Record struct {
 
 // Pack consists of SenML records array.
 type Pack struct {
-	XMLName *bool    `json:"_,omitempty" xml:"sensml"`
-	Xmlns   string   `json:"_,omitempty" xml:"xmlns,attr"`
+	XMLName *bool    `json:"-" xml:"sensml"`
+	Xmlns   string   `json:"-" xml:"xmlns,attr"`
 	Records []Record `xml:"senml"`
 }
 
