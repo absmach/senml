@@ -1,10 +1,10 @@
-module github.com/mainflux/senml
+module github.com/absmach/senml
 
-go 1.18
+go 1.21
 
 require (
-	github.com/fxamacker/cbor/v2 v2.4.0
-	github.com/stretchr/testify v1.8.0
+	github.com/fxamacker/cbor/v2 v2.5.0
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
