@@ -1,3 +1,6 @@
+// Copyright (c) Abstract Machines
+// SPDX-License-Identifier: Apache-2.0
+
 package senml_test
 
 import (
@@ -269,7 +272,7 @@ func TestNormalize(t *testing.T) {
 	r0.BaseName = ""
 	r0.Time = r0.BaseTime + r0.Time
 	r0.BaseTime = 0
-	*r0.Value = *r0.Value + r0.BaseValue
+	*r0.Value += r0.BaseValue
 	r0.BaseValue = 0
 	r0.Unit = r0.BaseUnit
 	r0.BaseUnit = ""
