@@ -25,12 +25,9 @@ jobs:
         args: --config .golangci.yml
 
     - name: Test
-      run: |
-        go test -v -race -tags test -coverprofile=profile.out -covermode=atomic ./...
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
     - name: Upload coverage
       uses: codecov/codecov-action@v5.0.7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./profile.out
-        name: codecov
