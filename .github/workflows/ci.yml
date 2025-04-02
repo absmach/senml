@@ -9,19 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Set up Go 1.23.x
+    - name: Set up Go 1.24.x
       uses: actions/setup-go@v5
       with:
-        go-version: 1.23.x
+        go-version: 1.24.x
       id: go
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v4
 
     - name: Lint
-      uses: golangci/golangci-lint-action@v6
+      uses: golangci/golangci-lint-action@v7
       with:
-        version: v1.60.3
+        version: v2.0.2
         args: --config .golangci.yml
 
     - name: Test
