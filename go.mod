@@ -1,8 +1,9 @@
 module github.com/absmach/senml
 
 go 1.24.2
+
 require (
-	github.com/fxamacker/cbor/v2 v2.8.0
+	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/stretchr/testify v1.10.0
 )
 
