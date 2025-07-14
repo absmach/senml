@@ -1,6 +1,6 @@
 module github.com/absmach/senml
 
-go 1.24.2
+go 1.24.5
 
 require (
 	github.com/fxamacker/cbor/v2 v2.9.0
